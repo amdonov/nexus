@@ -1,0 +1,128 @@
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": {},
+    "items": [
+        {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "nexus",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "nexus"
+                }
+            },
+            "spec": {
+                "dockerImageRepository": "amdonov/nexus"
+            },
+            "status": {
+                "dockerImageRepository": ""
+            }
+        },
+        {
+            "kind": "DeploymentConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "nexus",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "nexus"
+                }
+            },
+            "spec": {
+                "strategy": {
+                    "resources": {}
+                },
+                "triggers": [
+                    {
+                        "type": "ConfigChange"
+                    },
+                    {
+                        "type": "ImageChange",
+                        "imageChangeParams": {
+                            "automatic": true,
+                            "containerNames": [
+                                "nexus"
+                            ],
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "name": "nexus:latest"
+                            }
+                        }
+                    }
+                ],
+                "replicas": 1,
+                "selector": {
+                    "deploymentconfig": "nexus"
+                },
+                "template": {
+                    "metadata": {
+                        "creationTimestamp": null,
+                        "labels": {
+                            "deploymentconfig": "nexus"
+                        }
+                    },
+                    "spec": {
+                        "volumes": [
+                            {
+                                "name": "nexus-volume-1",
+                                "persistentVolumeClaim": {
+                                    "claimName": "nexus"
+                                }
+                            }
+                        ],
+                        "containers": [
+                            {
+                                "name": "nexus",
+                                "image": "amdonov/nexus",
+                                "ports": [
+                                    {
+                                        "containerPort": 8081,
+                                        "protocol": "TCP"
+                                    }
+                                ],
+                                "resources": {},
+                                "volumeMounts": [
+                                    {
+                                        "name": "nexus-volume-1",
+                                        "mountPath": "/opt/sonatype-work/nexus"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            "status": {}
+        },
+        {
+            "kind": "Service",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "nexus",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "nexus"
+                }
+            },
+            "spec": {
+                "ports": [
+                    {
+                        "name": "8081-tcp",
+                        "protocol": "TCP",
+                        "port": 8081,
+                        "targetPort": 8081,
+                        "nodePort": 0
+                    }
+                ],
+                "selector": {
+                    "deploymentconfig": "nexus"
+                }
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        }
+    ]
+}
