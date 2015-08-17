@@ -5,4 +5,4 @@ RUN curl -k -o nexus.tgz https://sonatype-download.global.ssl.fastly.net/nexus/o
 RUN chmod -R 777 /opt/sonatype-work/nexus /opt/nexus-2.11.4-01/logs /opt/nexus-2.11.4-01/tmp /opt/nexus-2.11.4-01/bin/jsw/linux-x86-64
 EXPOSE 8081
 VOLUME /opt/sonatype-work/nexus
-CMD /opt/nexus-2.11.4-01/bin/nexus start && tail -f /opt/sonatype-work/nexus/logs/nexus.log
+CMD /opt/nexus-2.11.4-01/bin/nexus start && tail -f /opt/nexus-2.11.4-01/logs/wrapper.log
